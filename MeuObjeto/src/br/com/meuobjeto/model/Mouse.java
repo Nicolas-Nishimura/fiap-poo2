@@ -1,11 +1,19 @@
 package br.com.meuobjeto.model;
 
 public class Mouse {
-	// Atributos privados: ninguém de fora mexe direto
+
+	// 1. Atributos sempre privados (Encapsulamento)
 	private String marca;
 	private double dpi;
 
-	// --- GETTERS (públicos: leitura liberada) ---
+	// 2. O CONSTRUTOR (O Cartório)
+	public Mouse(String marca, double dpi) {
+		this.marca = marca;
+		this.setDpi(dpi); // Usa o setter privado para validar o DPI no nascimento!
+		System.out.println("Registro inicial: Um mouse " + this.marca + " nasceu com " + this.dpi + " DPI.");
+	}
+
+	// 3. Getters (Apenas leitura)
 	public String getMarca() {
 		return this.marca;
 	}
@@ -14,32 +22,13 @@ public class Mouse {
 		return this.dpi;
 	}
 
-	// --- SETTERS ---
-	public void setMarca(String marca) {
-		this.marca = marca;
-	}
-
-	// Regra Especial: o DPI não pode ser negativo nem exagerado
-	public void setDpi(double dpi) {
-		if (dpi <= 0) {
-			System.out.println("Erro de Segurança: o DPI deve ser maior que zero!");
-			return;
-		}
-		if (dpi > 26000) {
-			System.out.println("Erro de Segurança: DPI acima do limite permitido (26000)!");
-			return;
-		}
-		this.dpi = dpi;
-	}
-
-	// --- MÉTODOS DE COMPORTAMENTO ---
+	// 4. COMPORTAMENTOS PÚBLICOS (As regras de negócio / Ações)
 	public void aumentarDpi(double valor) {
 		if (valor <= 0) {
 			System.out.println("Erro: o valor para aumentar o DPI deve ser maior que zero.");
 			return;
 		}
-		this.dpi += valor;
-		System.out.println("DPI aumentado. Novo DPI: " + this.dpi);
+		this.setDpi(this.dpi + valor);
 	}
 
 	public void diminuirDpi(double valor) {
@@ -47,11 +36,20 @@ public class Mouse {
 			System.out.println("Erro: o valor para diminuir o DPI deve ser maior que zero.");
 			return;
 		}
-		if (this.dpi - valor <= 0) {
-			System.out.println("Erro: o DPI não pode ficar zero ou negativo.");
-			return;
-		}
-		this.dpi -= valor;
-		System.out.println("DPI diminuído. Novo DPI: " + this.dpi);
+		this.setDpi(this.dpi - valor);
 	}
+
+	// 5. SETTER PRIVADO (A engrenagem interna de validação)
+	private void setDpi(double novoDpi) {
+		// Regra de negócio: o DPI deve ser positivo e dentro do limite do sensor
+		if (novoDpi > 0 && novoDpi <= 26000) {
+			this.dpi = novoDpi;
+			System.out.println("Sucesso: o DPI agora é " + this.dpi);
+		} else {
+			System.out.println("Erro de Validação: o DPI informado é inválido!");
+		}
+	}
+
+	// Obs: A marca do mouse é IMUTÁVEL na vida real (um Logitech não vira um ATK).
+	// Portanto, a regra de negócio exige que NÃO exista um método setMarca()!
 }
